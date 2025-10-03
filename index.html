@@ -1568,7 +1568,54 @@
 
 
 
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } 
+      from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+    // ✅ Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAZwvenI3n3u6y16tF0ENlJLpSTFhjJlY",
+      authDomain: "streamxpro-37aaf.firebaseapp.com",
+      projectId: "streamxpro-37aaf",
+      storageBucket: "streamxpro-37aaf.firebasestorage.app",
+      messagingSenderId: "874159026275",
+      appId: "1:874159026275:web:698e236398b9211b9d0856",
+      measurementId: "G-HWXNCSZXNC"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // ✅ Add post
+    async function addPost() {
+      let postText = document.getElementById("postInput").value;
+      if (postText.trim() !== "") {
+        await addDoc(collection(db, "posts"), {
+          text: postText,
+          createdAt: serverTimestamp()
+        });
+        document.getElementById("postInput").value = "";
+      }
+    }
+
+    // ✅ Listen for posts in real-time
+    const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+    onSnapshot(postsQuery, (snapshot) => {
+      let postsHTML = "";
+      snapshot.forEach((doc) => {
+        postsHTML += `<p>${doc.data().text}</p>`;
+      });
+      document.getElementById("posts").innerHTML = postsHTML;
+    });
+
+    // ✅ Make addPost available to button
+    window.addPost = addPost;
+  </script>
 
 
 
@@ -1580,5 +1627,6 @@
     </script>
 </body>
 </html>
+
 
 
